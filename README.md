@@ -150,9 +150,6 @@ Script membersihkan dan mengubah data, membagi data 80:20, melatih model, lalu m
 
 ---
 ## Tampilan Aplikasi
-
-> Ganti gambar placeholder di folder `docs/screenshots/` dengan tangkapan layar asli (nama file tetap sama).
-
 ### Beranda
 ![Beranda](docs/screenshots/01-beranda.png)
 
