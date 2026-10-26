@@ -68,34 +68,13 @@ Recall dijadikan metrik utama karena pelanggan yang sebenarnya mau membeli tetap
 
 ---
 
-## Tampilan Aplikasi
-
-> Ganti gambar placeholder di folder `docs/screenshots/` dengan tangkapan layar asli (nama file tetap sama).
-
-### Beranda
-![Beranda](docs/screenshots/01-beranda.png)
-
-### Formulir Prediksi
-![Formulir Prediksi](docs/screenshots/02-form-prediksi.png)
-
-### Hasil Prediksi
-![Hasil Prediksi](docs/screenshots/03-hasil-prediksi.png)
-
-### Performa Model
-![Performa Model](docs/screenshots/04-performa-model.png)
-
-### Validasi dan Peringatan Input
-![Peringatan Input](docs/screenshots/05-peringatan-input.png)
-
----
-
 ## Instalasi Lokal
 
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/<username>/<nama-repo>.git
-cd <nama-repo>
+git clone https://github.com/Alnazh/ta03-travelguard-logistic-regression.git
+cd ta03-travelguard-logistic-regression
 ```
 
 ### 2. Buat virtual environment
@@ -170,6 +149,23 @@ python train_model.py
 Script membersihkan dan mengubah data, membagi data 80:20, melatih model, lalu menyimpan `model.joblib`, `scaler.joblib`, `metrics.json`, dan grafik evaluasi. Jalankan ulang dengan versi library yang sama seperti di `requirements.txt` agar file model kompatibel.
 
 ---
+## Tampilan Aplikasi
+
+> Ganti gambar placeholder di folder `docs/screenshots/` dengan tangkapan layar asli (nama file tetap sama).
+
+### Beranda
+![Beranda](docs/screenshots/01-beranda.png)
+
+### Formulir Prediksi
+![Formulir Prediksi](docs/screenshots/02-form-prediksi.png)
+
+### Hasil Prediksi
+![Hasil Prediksi](docs/screenshots/03-hasil-prediksi.png)
+
+### Performa Model
+![Performa Model](docs/screenshots/04-performa-model.png)
+
+---
 
 ## Cara Penggunaan
 
@@ -183,11 +179,3 @@ Script membersihkan dan mengubah data, membagi data 80:20, melatih model, lalu m
 4. Aplikasi menampilkan label prediksi, probabilitas pembelian, dan faktor yang memengaruhinya
 
 ---
-
-## Deployment ke Render
-
-1. Unggah proyek ke repositori GitHub
-2. Di Render pilih **New > Web Service** lalu hubungkan repositori
-3. Build command: `pip install -r requirements.txt`
-4. Start command: `gunicorn app:app`
-5. Setelah deploy selesai, aplikasi dapat diakses lewat URL yang diberikan Render
