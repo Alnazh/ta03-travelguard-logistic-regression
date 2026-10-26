@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TravelGuard – Prediksi Pembelian Asuransi Perjalanan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="nav"><div class="wrap">
+  <a href="#beranda" class="brand"><i>✈</i> TravelGuard</a>
+  <nav class="menu">
+    <a href="#beranda">Beranda</a><a href="#cara">Cara Kerja</a><a href="#prediksi">Prediksi</a>
+    <a href="#performa">Performa Model</a><a href="#dataset">Dataset</a>
+  </nav>
+  <a href="#prediksi" class="btn btn-primary" style="padding:9px 20px">Coba Sekarang</a>
+</div></header>
+
+<section class="hero" id="beranda"><div class="wrap">
+  <div>
+    <span class="eyebrow" style="color:#5fe0cf">Tugas Akhir 3 · Pembelajaran Mesin</span>
+    <h1>Prediksi siapa yang akan <span>membeli asuransi perjalanan</span></h1>
+    <p>Alat bantu tim pemasaran asuransi. Masukkan data pelanggan, lalu model Regresi Logistik memperkirakan peluang pelanggan itu membeli asuransi perjalanan.</p>
+    <div class="cta">
+      <a href="#prediksi" class="btn btn-primary">Mulai Prediksi →</a>
+      <a href="#performa" class="btn btn-ghost">Lihat Performa Model</a>
+    </div>
+  </div>
+  <aside class="hero-card">
+    <h3>Ringkasan model (data uji)</h3>
+    <div class="stat-grid">
+      <div class="stat"><b>{{ '%.0f'|format(m.accuracy*100) }}%</b><small>Akurasi</small></div>
+      <div class="stat"><b>{{ '%.0f'|format(m.recall*100) }}%</b><small>Recall (kelas "Beli")</small></div>
+      <div class="stat"><b>{{ '%.2f'|format(m.auc) }}</b><small>Nilai AUC</small></div>
+      <div class="stat"><b>{{ '{:,}'.format(m.n_data).replace(',', '.') }}</b><small>Data pelanggan</small></div>
+    </div>
+  </aside>
+</div></section>
+
+<section id="cara"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow">Cara kerja</span><h2>Tiga langkah, hasil langsung</h2>
+    <p>Tidak perlu paham machine learning. Cukup isi formulir, sisanya dihitung model.</p></div>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><h3>Isi data pelanggan</h3><p>Usia, pendapatan, keluarga, pekerjaan, dan riwayat perjalanan pelanggan.</p></div>
+    <div class="step"><div class="n">2</div><h3>Model menghitung</h3><p>Data distandarisasi dengan scaler, lalu Regresi Logistik menghitung probabilitas dengan fungsi sigmoid.</p></div>
+    <div class="step"><div class="n">3</div><h3>Lihat hasilnya</h3><p>Muncul label prediksi, persentase peluang, dan faktor yang paling memengaruhi.</p></div>
+  </div>
+</div></section>
+
+<section id="prediksi"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow">Prediksi</span><h2>Cek peluang pembelian pelanggan</h2>
+    <p>Isi formulir di bawah lalu tekan tombol prediksi.</p></div>
+  <div class="pred-grid">
+    <form class="card" method="post" action="#prediksi" novalidate>
+      {% if errors %}<div class="err"><b>Periksa lagi isian Anda:</b><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+      <div class="row">
+        <div class="field"><label for="Age">Usia (tahun)</label>
+          <input type="number" id="Age" name="Age" value="{{ f.Age }}" min="17" max="100" required>
+          <small>Rentang data latih: {{ rng.Age[0] }}–{{ rng.Age[1] }}</small></div>
+        <div class="field"><label for="FamilyMembers">Anggota keluarga</label>
+          <input type="number" id="FamilyMembers" name="FamilyMembers" value="{{ f.FamilyMembers }}" min="1" max="20" required>
+          <small>Rentang data latih: {{ rng.FamilyMembers[0] }}–{{ rng.FamilyMembers[1] }}</small></div>
+      </div>
+      <div class="field"><label for="AnnualIncome">Pendapatan tahunan</label>
+        <input type="number" id="AnnualIncome" name="AnnualIncome" value="{{ f.AnnualIncome }}" min="0" step="10000" required>
+        <small>Satuan mengikuti dataset. Rentang data latih: {{ '{:,}'.format(rng.AnnualIncome[0]).replace(',', '.') }}–{{ '{:,}'.format(rng.AnnualIncome[1]).replace(',', '.') }}</small></div>
+      <div class="row">
+        <div class="field"><label for="PrivateSector">Jenis pekerjaan</label>
+          <select id="PrivateSector" name="PrivateSector">
+            <option value="1" {{ 'selected' if f.PrivateSector==1 }}>Swasta / Wiraswasta</option>
+            <option value="0" {{ 'selected' if f.PrivateSector==0 }}>Pemerintah</option></select></div>
+        <div class="field"><label for="GraduateOrNot">Lulusan perguruan tinggi?</label>
+          <select id="GraduateOrNot" name="GraduateOrNot">
+            <option value="1" {{ 'selected' if f.GraduateOrNot==1 }}>Ya</option>
+            <option value="0" {{ 'selected' if f.GraduateOrNot==0 }}>Tidak</option></select></div>
+        <div class="field"><label for="ChronicDiseases">Punya penyakit kronis?</label>
+          <select id="ChronicDiseases" name="ChronicDiseases">
+            <option value="0" {{ 'selected' if f.ChronicDiseases==0 }}>Tidak</option>
+            <option value="1" {{ 'selected' if f.ChronicDiseases==1 }}>Ya</option></select></div>
+        <div class="field"><label for="FrequentFlyer">Sering terbang?</label>
+          <select id="FrequentFlyer" name="FrequentFlyer">
+            <option value="0" {{ 'selected' if f.FrequentFlyer==0 }}>Tidak</option>
+            <option value="1" {{ 'selected' if f.FrequentFlyer==1 }}>Ya</option></select></div>
+      </div>
+      <div class="field"><label for="EverTravelledAbroad">Pernah bepergian ke luar negeri?</label>
+        <select id="EverTravelledAbroad" name="EverTravelledAbroad">
+          <option value="0" {{ 'selected' if f.EverTravelledAbroad==0 }}>Belum pernah</option>
+          <option value="1" {{ 'selected' if f.EverTravelledAbroad==1 }}>Pernah</option></select></div>
+      <button class="btn btn-submit" type="submit">Prediksi Sekarang</button>
+    </form>
+
+    <aside class="card result" id="hasil">
+      {% if hasil %}
+        <div class="verdict {{ 'yes' if hasil.berpotensi else 'no' }}">
+          <small>Hasil prediksi</small><h3>{{ hasil.label }}</h3></div>
+        <div class="prob">
+          <div class="top"><span>Probabilitas membeli</span><span>{{ hasil.persen }}%</span></div>
+          <div class="bar"><i data-w="{{ hasil.persen }}"></i><u></u></div>
+          <div class="axis"><span>0%</span><span>batas keputusan 50%</span><span>100%</span></div>
+        </div>
+        <div class="factors">
+          {% if hasil.naik %}<h4>Faktor yang menaikkan peluang</h4>{% for n,c in hasil.naik %}<span class="chip up">▲ {{ n }}</span>{% endfor %}{% endif %}
+          {% if hasil.turun %}<h4>Faktor yang menurunkan peluang</h4>{% for n,c in hasil.turun %}<span class="chip down">▼ {{ n }}</span>{% endfor %}{% endif %}
+        </div>
+        {% if hasil.luar_rentang %}<div class="warn">⚠ {{ hasil.luar_rentang|join(', ') }} berada di luar rentang data latih, jadi hasilnya kurang bisa diandalkan.</div>{% endif %}
+        <p class="note">Ini perkiraan statistik, bukan kepastian. Akurasi model sekitar {{ '%.0f'|format(m.accuracy*100) }}%, jadi gunakan sebagai bahan pertimbangan tim pemasaran.</p>
+      {% else %}
+        <div class="placeholder"><div class="ico">🧳</div><h3 style="margin-bottom:6px">Belum ada hasil</h3>
+          <p>Isi formulir lalu tekan <b>Prediksi Sekarang</b>. Hasil dan probabilitasnya muncul di sini.</p></div>
+      {% endif %}
+    </aside>
+  </div>
+</div></section>
+
+<section id="performa"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow">Performa model</span><h2>Seberapa bagus model ini?</h2>
+    <p>Hasil evaluasi pada {{ m.n_test }} data uji (20% data) yang tidak dipakai saat pelatihan.</p></div>
+  <div class="metrics">
+    <div class="metric"><b>{{ '%.1f'|format(m.accuracy*100) }}%</b><span>Accuracy</span></div>
+    <div class="metric"><b>{{ '%.1f'|format(m.precision*100) }}%</b><span>Precision</span></div>
+    <div class="metric hi"><b>{{ '%.1f'|format(m.recall*100) }}%</b><span>Recall (utama)</span></div>
+    <div class="metric"><b>{{ '%.1f'|format(m.f1*100) }}%</b><span>F1-Score</span></div>
+    <div class="metric"><b>{{ '%.3f'|format(m.auc) }}</b><span>AUC</span></div>
+  </div>
+  <div class="charts">
+    <div class="chart"><img src="{{ url_for('static', filename='img/confusion_matrix.png') }}" alt="Confusion matrix">
+      <p>Dari {{ m.tp + m.fn }} pelanggan yang benar-benar membeli, {{ m.tp }} berhasil terdeteksi.</p></div>
+    <div class="chart"><img src="{{ url_for('static', filename='img/roc.png') }}" alt="Kurva ROC">
+      <p>Kurva di atas garis putus-putus berarti model lebih baik dari tebakan acak.</p></div>
+    <div class="chart"><img src="{{ url_for('static', filename='img/koefisien.png') }}" alt="Koefisien fitur">
+      <p>Batang hijau menaikkan peluang membeli, oranye menurunkannya.</p></div>
+  </div>
+  <div class="insight">
+    <div class="card"><h3>Mana yang lebih merugikan?</h3>
+      <span class="tag fp">False Positive = {{ m.fp }}</span>
+      <p>Pelanggan yang sebenarnya tidak membeli, tapi diprediksi akan membeli. Akibatnya hanya sedikit biaya promosi yang terbuang.</p><br>
+      <span class="tag fn">False Negative = {{ m.fn }}</span>
+      <p>Pelanggan yang sebenarnya mau membeli, tapi diprediksi tidak. Peluang penjualan hilang, jadi ini lebih merugikan.</p></div>
+    <div class="card"><h3>Mengapa Recall jadi metrik utama?</h3>
+      <ul><li>Tujuan bisnisnya menjangkau sebanyak mungkin calon pembeli.</li>
+      <li>Recall mengukur berapa banyak pembeli asli yang berhasil terdeteksi.</li>
+      <li>Karena itu model dilatih dengan <code>class_weight="balanced"</code>, sehingga Recall naik dibanding model biasa (harganya, akurasi turun dari sekitar 76% ke 71%).</li>
+      <li>Kelas "Beli" sekitar {{ m.pct_beli }}% dari data, tergolong cukup seimbang, jadi SMOTE tidak diperlukan.</li></ul></div>
+  </div>
+</div></section>
+
+<section id="dataset" style="background:#fff;border-top:1px solid var(--line)"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow">Dataset</span><h2>Data yang dipakai</h2>
+    <p>Travel Insurance Prediction Data dari Kaggle: {{ '{:,}'.format(m.n_data).replace(',', '.') }} pelanggan dengan 8 fitur dan 1 target.</p></div>
+  <div class="table-wrap"><table>
+    <tr><th>Fitur</th><th>Jenis</th><th>Keterangan</th></tr>
+    <tr><td>Age</td><td>Numerik</td><td>Usia pelanggan</td></tr>
+    <tr><td>AnnualIncome</td><td>Numerik</td><td>Pendapatan tahunan</td></tr>
+    <tr><td>FamilyMembers</td><td>Numerik</td><td>Jumlah anggota keluarga</td></tr>
+    <tr><td>ChronicDiseases</td><td>Kategorikal (0/1)</td><td>Punya penyakit kronis atau tidak</td></tr>
+    <tr><td>Employment Type</td><td>Kategorikal</td><td>Pemerintah atau swasta/wiraswasta</td></tr>
+    <tr><td>GraduateOrNot</td><td>Kategorikal</td><td>Lulusan perguruan tinggi atau bukan</td></tr>
+    <tr><td>FrequentFlyer</td><td>Kategorikal</td><td>Sering terbang atau tidak</td></tr>
+    <tr><td>EverTravelledAbroad</td><td>Kategorikal</td><td>Pernah ke luar negeri atau belum</td></tr>
+    <tr><td><b>TravelInsurance</b></td><td>Target (0/1)</td><td>1 = membeli asuransi, 0 = tidak</td></tr>
+  </table></div>
+</div></section>
+
+<footer><div class="wrap"><b>TravelGuard</b> · Tugas Akhir 3 Pembelajaran Mesin · Regresi Logistik dengan Scikit-learn &amp; Flask</div></footer>
+
+<script>
+document.querySelectorAll('.bar i').forEach(function(el){
+  requestAnimationFrame(function(){ setTimeout(function(){ el.style.width = el.dataset.w + '%'; }, 80); });
+});
+{% if scroll %}document.getElementById('prediksi').scrollIntoView();{% endif %}
+</script>
+</body>
+</html>
